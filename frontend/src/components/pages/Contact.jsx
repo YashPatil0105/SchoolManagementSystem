@@ -21,15 +21,15 @@ export const Contact = () => {
       console.log('Create teacher:', { teacherId, teacherName, subject, contactId, teacherPhone, teacherMail });
       try {
         const response = await axios.post('http://localhost:1337/teacher', {
-          teacher_name:teacherName,
+          teacher_name: teacherName,
           subject, // Assuming dob is the variable name corresponding to date of birth
-          teacher_phone:teacherPhone,
+          teacher_phone: teacherPhone,
           teacher_mail: teacherMail // Assuming classValue corresponds to the student's class
-         // Assuming parentName corresponds to the parent's name
+          // Assuming parentName corresponds to the parent's name
           // Assuming parentPhone corresponds to the parent's phone number
         });
         // console.log("pre response");
-        const teacherID=response.data.teacherId;
+        const teacherID = response.data.teacherId;
         console.log(teacherID); // This will log the response from the server
         window.alert(`Teacher details inserted successfully with teacherID: ${teacherID}`);
       } catch (error) {
