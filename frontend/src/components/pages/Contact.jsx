@@ -24,14 +24,14 @@ export const Contact = () => {
           teacher_name:teacherName,
           subject, // Assuming dob is the variable name corresponding to date of birth
           teacher_phone:teacherPhone,
-          studentClass: classValue, // Assuming classValue corresponds to the student's class
-          parent_name: parentName, // Assuming parentName corresponds to the parent's name
+          teacher_mail: teacherMail // Assuming classValue corresponds to the student's class
+         // Assuming parentName corresponds to the parent's name
           // Assuming parentPhone corresponds to the parent's phone number
         });
         // console.log("pre response");
-        const studentID=response.data.studentId;
-        console.log(studentID); // This will log the response from the server
-        window.alert(`Student details inserted successfully with studentID: ${studentID}`);
+        const teacherID=response.data.teacherId;
+        console.log(teacherID); // This will log the response from the server
+        window.alert(`Teacher details inserted successfully with teacherID: ${teacherID}`);
       } catch (error) {
         // console.log("error");
         console.error(error); // Log any errors that occur during the request

@@ -153,7 +153,7 @@ app.post('/teacher', async (req, res) => {
         const teacherQuery = "INSERT INTO school_data.teacher (teacher_name, subject) VALUES (?, ?)";
         const teacherValues = [teacher_name, subject];
         const teacherResult = await conn.query(teacherQuery, teacherValues);
-        const teacherId = teacherResult.insertId;
+        let teacherId = teacherResult.insertId;
 
         if (!teacherId || !teacher_phone || !teacher_mail) {
             return res.status(400).json({ error: "Teacher ID not found" });
@@ -164,7 +164,8 @@ app.post('/teacher', async (req, res) => {
 
         await conn.commit();
 
-        res.status(201).json({ message: "Teacher and contact details inserted successfully" });
+        teacherId=teacherId.toString();
+        res.status(201).json({ message: "Teacher and contact details inserted successfully",teacherId:teacherId });
     } catch (error) {
         console.error(error);
         if (conn) {
