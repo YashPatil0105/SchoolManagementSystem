@@ -1,6 +1,6 @@
 const http = require('http');
 const express = require('express'), bodyParser = require('body-parser');
-const cors= require('cors');
+const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
@@ -34,7 +34,7 @@ app.get('/student', async (req, res) => {
 app.post('/student', async (req, res) => {
     const { name, DOB, phone, studentClass, parent_name } = req.body;
 
-    if (!name || !DOB || !phone || !studentClass || !parent_name ) {
+    if (!name || !DOB || !phone || !studentClass || !parent_name) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -57,9 +57,9 @@ app.post('/student', async (req, res) => {
         await conn.query(parentQuery, parentValues);
 
         await conn.commit();
-        studentId=studentId.toString();
+        studentId = studentId.toString();
 
-        res.status(201).json({ message: "Student and parent details inserted successfully with studentID: ",studentId:studentId });
+        res.status(201).json({ message: "Student and parent details inserted successfully with studentID: ", studentId: studentId });
     } catch (error) {
         console.error(error);
 
@@ -86,7 +86,7 @@ app.delete('/student/:student_id', async (req, res) => {
         const query = "DELETE FROM school_data.student WHERE student_id = ?";
         const values = [studentId];
         await conn.query(query, values);
-        
+
         res.status(200).json({ message: "Student deleted successfully" });
     } catch (error) {
         console.error(error);
@@ -127,7 +127,7 @@ app.delete('/teacher/:teacher_id', async (req, res) => {
         const query = "DELETE FROM school_data.teacher WHERE teacher_id = ?";
         const values = [teacherId];
         await conn.query(query, values);
-        
+
         res.status(200).json({ message: "Teacher deleted successfully" });
     } catch (error) {
         console.error(error);
@@ -153,7 +153,7 @@ app.post('/teacher', async (req, res) => {
         const teacherQuery = "INSERT INTO school_data.teacher (teacher_name, subject) VALUES (?, ?)";
         const teacherValues = [teacher_name, subject];
         const teacherResult = await conn.query(teacherQuery, teacherValues);
-        const teacherId = teacherResult.insertId;
+        let teacherId = teacherResult.insertId;
 
         if (!teacherId || !teacher_phone || !teacher_mail) {
             return res.status(400).json({ error: "Teacher ID not found" });
@@ -164,7 +164,8 @@ app.post('/teacher', async (req, res) => {
 
         await conn.commit();
 
-        res.status(201).json({ message: "Teacher and contact details inserted successfully" });
+        teacherId=teacherId.toString();
+        res.status(201).json({ message: "Teacher and contact details inserted successfully",teacherId:teacherId });
     } catch (error) {
         console.error(error);
         if (conn) {
@@ -211,7 +212,7 @@ app.get('/staff', async (req, res) => {
 app.post('/staff', async (req, res) => {
     const { staff_name, position, phone } = req.body;
 
-   
+
     if (!staff_name || !position || !phone) {
         return res.status(400).json({ error: "All fields are required" });
     }
@@ -227,7 +228,7 @@ app.post('/staff', async (req, res) => {
         const staffResult = await conn.query(staffQuery, staffValues);
         const staffId = staffResult.insertId;
 
-      
+
         if (!staffId) {
             return res.status(400).json({ error: "Staff ID not found" });
         }
@@ -246,7 +247,7 @@ app.post('/staff', async (req, res) => {
         }
         res.status(500).json({ error: "Internal server error" });
     } finally {
-   
+
         if (conn) {
             conn.release();
         }
