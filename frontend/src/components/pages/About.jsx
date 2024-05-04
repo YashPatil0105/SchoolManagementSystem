@@ -1,21 +1,42 @@
 import React, { useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import axios from 'axios';
 
 export const About = () => {
+  const [parentName,setParentName]=useState("");
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [phone, setPhone] = useState("");
   const [classValue, setClassValue] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
     if (isEditing) {
       // Update student logic
       console.log("Update student:", { name, dob, phone, classValue });
+      setIsEditing(false);
     } else {
       // Create student logic
-      console.log("Create student:", { name, dob, phone, classValue });
+      // console.log("Create student:", { name, dob, phone, classValue });
+      try {
+        const response = await axios.post('http://localhost:1337/student', {
+          name,
+          DOB: dob, // Assuming dob is the variable name corresponding to date of birth
+          phone,
+          studentClass: classValue, // Assuming classValue corresponds to the student's class
+          parent_name: parentName, // Assuming parentName corresponds to the parent's name
+          // Assuming parentPhone corresponds to the parent's phone number
+        });
+        // console.log("pre response");
+        const studentID=response.data.studentId;
+        console.log(studentID); // This will log the response from the server
+        window.alert(`Student details inserted successfully with studentID: ${studentID}`);
+      } catch (error) {
+        // console.log("error");
+        console.error(error); // Log any errors that occur during the request
+      }
+      // console.log("after try");
     }
   };
 
@@ -52,6 +73,22 @@ export const About = () => {
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
               placeholder="Enter student name"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-white font-semibold mb-2"
+            >
+              Parent Name
+            </label>
+            <input
+              type="text"
+              id="parent_name"
+              value={parentName}
+              onChange={(e) => setParentName(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder="Enter parent name"
             />
           </div>
           <div className="mb-4">

@@ -1,7 +1,9 @@
 const http = require('http');
 const express = require('express'), bodyParser = require('body-parser');
+const cors= require('cors');
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 
 const mariadb = require('mariadb');
@@ -28,9 +30,9 @@ app.get('/student', async (req, res) => {
     }
 })
 app.post('/student', async (req, res) => {
-    const { name, DOB, phone, studentClass, parent_name, parent_phone } = req.body;
+    const { name, DOB, phone, studentClass, parent_name } = req.body;
 
-    if (!name || !DOB || !phone || !studentClass || !parent_name || !parent_phone) {
+    if (!name || !DOB || !phone || !studentClass || !parent_name ) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -43,18 +45,19 @@ app.post('/student', async (req, res) => {
         const studentQuery = "INSERT INTO school_data.student (name, DOB, phone, class) VALUES (?, ?, ?, ?)";
         const studentValues = [name, DOB, phone, studentClass];
         const studentResult = await conn.query(studentQuery, studentValues);
-        const studentId = studentResult.insertId;
+        let studentId = studentResult.insertId;
 
         if (!studentId) {
             return res.status(400).json({ error: "Student ID not found" });
         }
         const parentQuery = "INSERT INTO school_data.parent (parent_name, parent_phone, student_id) VALUES (?, ?, ?)";
-        const parentValues = [parent_name, parent_phone, studentId];
+        const parentValues = [parent_name, phone, studentId];
         await conn.query(parentQuery, parentValues);
 
         await conn.commit();
+        studentId=studentId.toString();
 
-        res.status(201).json({ message: "Student and parent details inserted successfully" });
+        res.status(201).json({ message: "Student and parent details inserted successfully with studentID: ",studentId:studentId });
     } catch (error) {
         console.error(error);
 
