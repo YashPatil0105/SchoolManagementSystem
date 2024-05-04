@@ -1,80 +1,69 @@
-import React, { useState, useEffect } from 'react';
-
-// Simulated database
-let staffDB = [
-  { id: 1, name: 'John Doe', position: 'Manager', phone: '1234567890' },
-  { id: 2, name: 'Jane Smith', position: 'Developer', phone: '0987654321' },
-];
+import React, { useState } from 'react';
+import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import axios from 'axios';
 
 export const Staff = () => {
-  const [staffList, setStaffList] = useState(staffDB);
-  const [staffName, setStaffName] = useState('');
+  const [staffId, setstaffId] = useState('');
+  const [staffName, setstaffName] = useState('');
   const [position, setPosition] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [staffPhone, setstaffPhone] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    setStaffList(staffDB);
-  }, []);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = {};
-
-    if (!staffName.trim()) {
-      errors.staffName = 'Staff name is required';
-    }
-
-    if (!position.trim()) {
-      errors.position = 'Position is required';
-    }
-
-    if (!phoneNumber.trim()) {
-      errors.phoneNumber = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(phoneNumber)) {
-      errors.phoneNumber = 'Invalid phone number';
-    }
-
-    if (Object.keys(errors).length === 0) {
-      if (editingId) {
-        // Update staff
-        const updatedStaff = staffList.map((staff) =>
-          staff.id === editingId ? { ...staff, name: staffName, position, phone: phoneNumber } : staff
-        );
-        setStaffList(updatedStaff);
-        setEditingId(null);
-      } else {
-        // Create new staff
-        const newStaff = { id: staffList.length + 1, name: staffName, position, phone: phoneNumber };
-        setStaffList([...staffList, newStaff]);
-      }
-
-      setStaffName('');
-      setPosition('');
-      setPhoneNumber('');
+    if (isEditing) {
+      // Update staff logic
+      console.log('Update staff:', { staffId, staffName, position,  staffPhone});
     } else {
-      setErrors(errors);
+      // Create staff logic
+      console.log('Create staff:', { staffId, staffName, position,  staffPhone });
+      try {
+        const response = await axios.post('http://localhost:1337/staff', {
+          staff_name: staffName,
+          position, // Assuming dob is the variable name corresponding to date of birth
+          phone: staffPhone,
+         // Assuming classValue corresponds to the student's class
+          // Assuming parentName corresponds to the parent's name
+          // Assuming parentPhone corresponds to the parent's phone number
+        });
+        // console.log("pre response");
+        const staffID = response.data.staffId;
+        console.log(staffID); // This will log the response from the server
+        window.alert(`staff details inserted successfully with staffID: ${staffID}`);
+      } catch (error) {
+        // console.log("error");
+        console.error(error); // Log any errors that occur during the request
+      }
     }
   };
 
-  const handleEdit = (staff) => {
-    setStaffName(staff.name);
-    setPosition(staff.position);
-    setPhoneNumber(staff.phone);
-    setEditingId(staff.id);
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
-  const handleDelete = (id) => {
-    const updatedStaff = staffList.filter((staff) => staff.id !== id);
-    setStaffList(updatedStaff);
+  const handleDelete = () => {
+    // Delete staff logic
+    console.log('Delete staff');
   };
 
   return (
     <div className="bg-gray-900 min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-white mb-8 text-center">Staff Information</h2>
+        <h2 className="text-3xl font-bold text-white mb-8 text-center">Staff Form</h2>
         <form onSubmit={handleSubmit} className="bg-gray-800 rounded-lg p-8 shadow-lg">
+          {/* <div className="mb-4">
+            <label htmlFor="staffId" className="block text-white font-semibold mb-2">
+              staff ID
+            </label>
+            <input
+              type="text"
+              id="staffId"
+              value={staffId}
+              onChange={(e) => setstaffId(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder="Enter staff ID"
+            />
+          </div> */}
           <div className="mb-4">
             <label htmlFor="staffName" className="block text-white font-semibold mb-2">
               Staff Name
@@ -83,15 +72,13 @@ export const Staff = () => {
               type="text"
               id="staffName"
               value={staffName}
-              onChange={(e) => setStaffName(e.target.value)}
-              className={`w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 ${
-                errors.staffName ? 'border-red-500' : ''
-              }`}
+              onChange={(e) => setstaffName(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder="Enter staff name"
             />
-            {errors.staffName && <p className="text-red-500 text-xs italic">{errors.staffName}</p>}
           </div>
           <div className="mb-4">
-            <label htmlFor="position" className="block text-white font-semibold mb-2">
+            <label htmlFor="Position" className="block text-white font-semibold mb-2">
               Position
             </label>
             <input
@@ -99,84 +86,54 @@ export const Staff = () => {
               id="position"
               value={position}
               onChange={(e) => setPosition(e.target.value)}
-              className={`w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 ${
-                errors.position ? 'border-red-500' : ''
-              }`}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder="Enter Position"
             />
-            {errors.position && <p className="text-red-500 text-xs italic">{errors.position}</p>}
           </div>
-          <div className="mb-6">
-            <label htmlFor="phoneNumber" className="block text-white font-semibold mb-2">
-              Phone Number
+
+          <div className="mb-4">
+            <label htmlFor="staffPhone" className="block text-white font-semibold mb-2">
+              Phone
             </label>
             <input
-              type="text"
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className={`w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 ${
-                errors.phoneNumber ? 'border-red-500' : ''
-              }`}
+              type="tel"
+              id="staffPhone"
+              value={staffPhone}
+              onChange={(e) => setstaffPhone(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder="Enter staff phone"
             />
-            {errors.phoneNumber && <p className="text-red-500 text-xs italic">{errors.phoneNumber}</p>}
           </div>
           <div className="flex justify-end space-x-4">
             <button
               type="submit"
               className="flex items-center px-6 py-2 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors duration-300"
             >
-              {editingId ? 'Update' : 'Submit'}
+              <FaPlus className="mr-2" />
+              {isEditing ? 'Update' : 'Create'}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStaffName('');
-                setPosition('');
-                setPhoneNumber('');
-                setEditingId(null);
-              }}
-              className="flex items-center px-6 py-2 rounded-md bg-gray-500 text-white font-semibold hover:bg-gray-600 transition-colors duration-300"
-            >
-              Cancel
-            </button>
+            {!isEditing && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  className="flex items-center px-6 py-2 rounded-md bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition-colors duration-300"
+                >
+                  <FaEdit className="mr-2" />
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="flex items-center px-6 py-2 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
+                >
+                  <FaTrash className="mr-2" />
+                  Delete
+                </button>
+              </>
+            )}
           </div>
         </form>
-        <div className="mt-8">
-          <h3 className="text-xl font-bold text-white mb-4">Staff List</h3>
-          <table className="w-full table-auto bg-gray-800 rounded-lg shadow-lg">
-            <thead>
-              <tr className="bg-gray-700">
-                <th className="px-4 py-2 text-white">Name</th>
-                <th className="px-4 py-2 text-white">Position</th>
-                <th className="px-4 py-2 text-white">Phone</th>
-                <th className="px-4 py-2 text-white">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staffList.map((staff) => (
-                <tr key={staff.id} className="border-b border-gray-700">
-                  <td className="px-4 py-2 text-white">{staff.name}</td>
-                  <td className="px-4 py-2 text-white">{staff.position}</td>
-                  <td className="px-4 py-2 text-white">{staff.phone}</td>
-                  <td className="px-4 py-2 text-white">
-                    <button
-                      onClick={() => handleEdit(staff)}
-                      className="flex items-center px-3 py-1 rounded-md bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition-colors duration-300 mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(staff.id)}
-                      className="flex items-center px-3 py-1 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );

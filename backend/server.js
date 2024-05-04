@@ -226,7 +226,7 @@ app.post('/staff', async (req, res) => {
         const staffQuery = "INSERT INTO school_data.staff (staff_name, position) VALUES (?, ?)";
         const staffValues = [staff_name, position];
         const staffResult = await conn.query(staffQuery, staffValues);
-        const staffId = staffResult.insertId;
+        let staffId = staffResult.insertId;
 
 
         if (!staffId) {
@@ -238,7 +238,8 @@ app.post('/staff', async (req, res) => {
 
         await conn.commit();
 
-        res.status(201).json({ message: "Staff and contact details inserted successfully" });
+        staffId=staffId.toString();
+        res.status(201).json({ message: "Staff and contact details inserted successfully",staffId:staffId });
     } catch (error) {
         console.error(error);
 
