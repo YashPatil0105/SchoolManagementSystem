@@ -190,10 +190,18 @@ export const Staff = () => {
     setIsEditing(true);
   };
 
-  const handleDelete = () => {
-    // Delete staff logic
-    console.log('Delete staff');
+  const handleDelete = async (staffId) => {
+    try {
+      await axios.delete(`http://localhost:1337/staff/${staffId}`);
+      // If the request is successful, remove the student from the state
+      setTeachers(prevTeachers => prevTeachers.filter(staff => staff.staff_id !== staffId));
+      console.log("Staff deleted successfully");
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      // Handle errors accordingly, show error message to the user, etc.
+    }
   };
+
 
   const switchMode = (newMode) => {
     setMode(newMode);
@@ -203,6 +211,15 @@ export const Staff = () => {
     // Perform search logic here
     console.log("Search:", searchQuery);
     // You can implement the search functionality based on the searchQuery state
+  };
+  const fetchStaff = async () => {
+    try {
+      const response = await axios.get('http://localhost:1337/staff');
+      setStaffList(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
   };
 
   return (
@@ -305,6 +322,7 @@ export const Staff = () => {
             <table className="w-full table-auto bg-gray-800 rounded-lg shadow-lg">
               <thead>
                 <tr className="bg-gray-700">
+                  <th className="px-4 py-2 text-white">ID</th>
                   <th className="px-4 py-2 text-white">Staff Name</th>
                   <th className="px-4 py-2 text-white">Position</th>
                   <th className="px-4 py-2 text-white">Phone</th>
@@ -314,7 +332,8 @@ export const Staff = () => {
               <tbody>
                 {staffList.map(staff => (
                   <tr key={staff.id} className="border-b border-gray-700">
-                    <td className="px-4 py-2 text-white">{staff.staffName}</td>
+                    <td className="px-4 py-2 text-white">{staff.staff_id}</td>
+                    <td className="px-4 py-2 text-white">{staff.staff_name}</td>
                     <td className="px-4 py-2 text-white">{staff.position}</td>
                     <td className="px-4 py-2 text-white">{staff.staffPhone}</td>
                     <td className="px-4 py-2 text-white">
@@ -325,7 +344,7 @@ export const Staff = () => {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(staff.id)}
+                        onClick={() => handleDelete(staff.staff_id)}
                         className="flex items-center px-3 py-1 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
                       >
                         Delete
@@ -346,7 +365,9 @@ export const Staff = () => {
             Create Staff
           </button>
           <button
-            onClick={() => switchMode('view')}
+            onClick={() => {switchMode('view');
+                  fetchStaff();
+            }}
             className="flex items-center px-6 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
           >
             View All Staff
