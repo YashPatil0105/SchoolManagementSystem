@@ -42,6 +42,7 @@ export const About = () => {
           parent_name: parentName, // Assuming parentName corresponds to the parent's name
           // Assuming parentPhone corresponds to the parent's phone number
         });
+        console.log(dob);
         const studentID=response.data.studentId;
         console.log(studentID); // This will log the response from the server
         window.alert(`Student details inserted successfully with studentID: ${studentID}`);
@@ -82,10 +83,16 @@ export const About = () => {
     setIsEditing(false); // Reset editing mode when switching modes
   };
 
-  const handleSearch = () => {
+  const handleSearch = async() => {
     // Perform search logic here
     console.log("Search:", searchQuery);
-    // You can implement the search functionality based on the searchQuery state
+    try {
+      const response = await axios.get(`http://localhost:1337/student/:${searchQuery}`);
+      setStudents(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
   };
   const formatDate = (dateString) => {
     const date = new Date(dateString);
