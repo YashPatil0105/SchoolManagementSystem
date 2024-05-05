@@ -318,6 +318,11 @@ export const Contact = () => {
   };
 
   const handleDelete = async (teacherId) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this Teacher ?");
+    if (!isConfirmed) {
+      // If user cancels deletion, return from the function
+      return;
+    }
     try {
       await axios.delete(`http://localhost:1337/teacher/${teacherId}`);
       fetchTeachers();

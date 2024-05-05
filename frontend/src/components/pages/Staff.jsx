@@ -307,15 +307,20 @@ export const Staff = () => {
   };
   
   const handleDelete = async (staffId) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this staff member?");
+    if (!isConfirmed) {
+      // If user cancels deletion, return from the function
+      return;
+    }
+  
     try {
       await axios.delete(`http://localhost:1337/staff/${staffId}`);
-      fetchStaff();
+      fetchStaff(); // Assuming fetchStaff is a function that fetches staff data
       console.log('Staff deleted successfully');
     } catch (error) {
       console.error('Error deleting staff:', error);
     }
   };
-
   const switchMode = (newMode) => {
     setMode(newMode);
     setIsEditing(false); // Reset editing mode when switching modes
