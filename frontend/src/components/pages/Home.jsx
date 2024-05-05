@@ -14,7 +14,7 @@ const cardData = [
     link: '/student',
   },
   {
-    title: 'Parent',
+    title: 'Progresss',
     icon: parentsIcon,
     link: '/parent',
   },

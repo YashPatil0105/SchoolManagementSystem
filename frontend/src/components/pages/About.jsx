@@ -371,7 +371,13 @@ export const About = () => {
       }
     }
   };
-
+  const handleClear = () => {
+    setName("");
+    setParentName("");
+    setDob("");
+    setPhone("");
+    setClassValue("");
+  };
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -480,7 +486,7 @@ export const About = () => {
             <div className="mb-4">
               <label
                 htmlFor="phone"
-                className="block text-white font-semibold mb-2"
+                className="block text-white  bg-gray-700font-semibold mb-2"
               >
                 Phone
               </label>
@@ -532,11 +538,11 @@ export const About = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={handleClear}
                     className="flex items-center px-6 py-2 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
                   >
                     <FaTrash className="mr-2" />
-                    Delete
+                    Clear
                   </button>
                 </>
               )}

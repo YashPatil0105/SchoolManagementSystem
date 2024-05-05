@@ -361,7 +361,7 @@ export const Attendance = () => {
                 }}
                 className="flex items-center px-6 py-2 rounded-md bg-gray-500 text-white font-semibold hover:bg-gray-600 transition-colors duration-300"
               >
-                Cancel
+                Clear
               </button>
             </div>
           </form>
