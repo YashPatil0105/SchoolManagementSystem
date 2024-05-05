@@ -12,7 +12,7 @@ const mariadb = require('mariadb');
 const pool = mariadb.createPool({
     host: '127.0.0.1',
     user: 'root',
-    password: 'vjti@123',
+    password: 'sumit1234',
     connectionLimit: 5
 });
 
@@ -569,6 +569,36 @@ app.post('/daily_attendence', async (req, res) => {
         }
     }
 });
+app.get('/daily_attendence/:student_id', async (req, res) => {
+    const studentId = req.params.student_id;
+
+    if (!studentId) {
+        return res.status(400).json({ error: "Student ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+
+        // Query to fetch attendance records by student_id
+        const query = "SELECT * FROM school_data.daily_attendence WHERE student_id = ?";
+        values=studentId.slice(1);
+        const rows = await conn.query(query, values);
+
+        // If no rows are returned, return an empty array
+        // const attendanceRecords = rows.length ? rows : [];
+
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
+
 
 
 //attendence record
