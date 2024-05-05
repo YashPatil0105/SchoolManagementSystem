@@ -180,7 +180,7 @@ export const Contact = () => {
   const [searchQuery, setSearchQuery] = useState(""); // State to store search query
   useEffect(() => {
     // Fetch teacher data from API
-    axios.get('http://localhost:1337/teachers')
+    axios.get('http://localhost:1337/teacher')
       .then(response => {
         setTeachers(response.data);
       })
@@ -217,10 +217,26 @@ export const Contact = () => {
   const handleEdit = () => {
     setIsEditing(true);
   };
+  const fetchTeacher = async () => {
+    try {
+      const response = await axios.get('http://localhost:1337/teacher');
+      setTeachers(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
+  };
 
-  const handleDelete = () => {
-    // Delete teacher logic
-    console.log('Delete teacher');
+  const handleDelete = async (teacherId) => {
+    try {
+      await axios.delete(`http://localhost:1337/teacher/${teacherId}`);
+      // If the request is successful, remove the student from the state
+      setTeachers(prevTeachers => prevTeachers.filter(teacher => teacher.teacher_id !== teacherId));
+      console.log("Teacher deleted successfully");
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      // Handle errors accordingly, show error message to the user, etc.
+    }
   };
 
   const switchMode = (newMode) => {
@@ -346,6 +362,7 @@ export const Contact = () => {
             <table className="w-full table-auto bg-gray-800 rounded-lg shadow-lg">
               <thead>
                 <tr className="bg-gray-700">
+                  <th className="px-4 py-2 text-white">ID</th>
                   <th className="px-4 py-2 text-white">Teacher Name</th>
                   <th className="px-4 py-2 text-white">Subject</th>
                   <th className="px-4 py-2 text-white">Phone</th>
@@ -356,7 +373,8 @@ export const Contact = () => {
               <tbody>
                 {teachers.map(teacher => (
                   <tr key={teacher.id} className="border-b border-gray-700">
-                    <td className="px-4 py-2 text-white">{teacher.teacherName}</td>
+                    <td className="px-4 py-2 text-white">{teacher.teacher_id}</td>
+                    <td className="px-4 py-2 text-white">{teacher.teacher_name}</td>
                     <td className="px-4 py-2 text-white">{teacher.subject}</td>
                     <td className="px-4 py-2 text-white">{teacher.teacherPhone}</td>
                     <td className="px-4 py-2 text-white">{teacher.teacherMail}</td>
@@ -368,7 +386,7 @@ export const Contact = () => {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(teacher.id)}
+                        onClick={() => handleDelete(teacher.teacher_id)}
                         className="flex items-center px-3 py-1 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
                       >
                         Delete
@@ -389,7 +407,9 @@ export const Contact = () => {
             Create Teacher
           </button>
           <button
-            onClick={() => switchMode('view')}
+            onClick={() =>{ switchMode('view');
+              fetchTeacher();
+             } }
             className="flex items-center px-6 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
           >
             View All Teachers
