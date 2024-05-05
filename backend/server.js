@@ -31,6 +31,48 @@ app.get('/student', async (req, res) => {
         console.log(error);
     }
 })
+app.get('/student/:student_id', async (req, res) => {
+    const studentId = req.params.student_id;
+
+    if (!studentId) {
+        return res.status(400).json({ error: "Student ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        
+        // Query to fetch details of the student with the given student_id
+        const studentQuery = "SELECT * FROM school_data.student WHERE student_id = ?";
+        const values=[studentId.slice(1)];
+        const studentRows = await conn.query(studentQuery, values);
+        
+        // Check if the student exists
+        if (!studentRows) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        // Query to fetch details of the parent with the corresponding student_id
+        const parentQuery = "SELECT * FROM school_data.parent WHERE student_id = ?";
+        const parentRows = await conn.query(parentQuery, values);
+
+        // Combine student and parent details and send as JSON response
+        const studentData = {
+            student: studentRows[0],
+            parent: parentRows[0] // Assuming one parent per student, adjust if needed
+        };
+
+        res.status(200).json(studentData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
+    }
+});
+
 app.post('/student', async (req, res) => {
     const { name, DOB, phone, studentClass, parent_name } = req.body;
 
@@ -114,6 +156,48 @@ app.get('/teacher', async (req, res) => {
         console.log(error);
     }
 })
+app.get('/teacher/:teacher_id', async (req, res) => {
+    const teacherId = req.params.teacher_id;
+
+    if (!teacherId) {
+        return res.status(400).json({ error: "teacher ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        
+        // Query to fetch details of the teacher with the given teacher_id
+        const teacherQuery = "SELECT * FROM school_data.teacher WHERE teacher_id = ?";
+        const values=[teacherId.slice(1)];
+        const teacherRows = await conn.query(teacherQuery, values);
+        
+        // Check if the teacher exists
+        if (!teacherRows) {
+            return res.status(404).json({ error: "teacher not found" });
+        }
+
+        // Query to fetch details of the parent with the corresponding teacher_id
+        const contactQuery = "SELECT * FROM school_data.teacher_contact WHERE teacher_id = ?";
+        const contactRows = await conn.query(contactQuery, values);
+
+        // Combine teacher and parent details and send as JSON response
+        const teacherData = {
+            teacher: teacherRows[0],
+            contact: contactRows[0] // Assuming one parent per teacher, adjust if needed
+        };
+
+        res.status(200).json(teacherData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
+    }
+});
+
 app.delete('/teacher/:teacher_id', async (req, res) => {
     const teacherId = req.params.teacher_id;
 
@@ -209,6 +293,47 @@ app.get('/staff', async (req, res) => {
         console.log(error);
     }
 })
+app.get('/staff/:staff_id', async (req, res) => {
+    const staffId = req.params.staff_id;
+
+    if (!staffId) {
+        return res.status(400).json({ error: "Staff ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        
+        // Query to fetch details of the staff member with the given staff_id
+        const staffQuery = "SELECT * FROM school_data.staff WHERE staff_id = ?";
+        const values=[staffId.slice(1)];
+        const staffRows = await conn.query(staffQuery, values);
+        
+        // Check if the staff member exists
+        if (!staffRows) {
+            return res.status(404).json({ error: "Staff member not found" });
+        }
+
+        // Query to fetch details of the staff member with the corresponding staff_id
+        const contactQuery = "SELECT * FROM school_data.staff_contact WHERE staff_id = ?";
+        const contactRows = await conn.query(contactQuery, values);
+
+        // Combine staff and contact details and send as JSON response
+        const staffData = {
+            staff: staffRows[0],
+            contact: contactRows[0] // Assuming one contact per staff member, adjust if needed
+        };
+
+        res.status(200).json(staffData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
+    }
+});
 app.post('/staff', async (req, res) => {
     const { staff_name, position, phone } = req.body;
 
@@ -268,6 +393,30 @@ app.get('/staff_contact', async (req, res) => {
         console.log(error);
     }
 })
+app.delete('/staff/:staff_id', async (req, res) => {
+    const staffId = req.params.staff_id;
+
+    if (!staffId) {
+        return res.status(400).json({ error: "staff ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const query = "DELETE FROM school_data.staff WHERE staff_id = ?";
+        const values = [staffId];
+        await conn.query(query, values);
+
+        res.status(200).json({ message: "staff deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
+    }
+});
 
 
 //parent

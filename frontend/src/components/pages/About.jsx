@@ -192,7 +192,7 @@ export const About = () => {
 
   useEffect(() => {
     // Fetch student data from API
-    axios.get('http://localhost:1337/students')
+    axios.get('http://localhost:1337/student')
       .then(response => {
         setStudents(response.data);
       })
