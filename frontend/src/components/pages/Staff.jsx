@@ -207,10 +207,17 @@ export const Staff = () => {
     setMode(newMode);
     setIsEditing(false); // Reset editing mode when switching modes
   };
-  const handleSearch = () => {
+  const handleSearch = async() => {
     // Perform search logic here
     console.log("Search:", searchQuery);
     // You can implement the search functionality based on the searchQuery state
+    try {
+      const response = await axios.get(`http://localhost:1337/staff/:${searchQuery}`);
+      setStaffList(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
   };
   const fetchStaff = async () => {
     try {

@@ -71,8 +71,9 @@ app.get('/student/:student_id', async (req, res) => {
             student: studentRows[0],
             parent: parentRows[0] // Assuming one parent per student, adjust if needed
         };
-
-        res.status(200).json(studentData);
+        const merge={...studentRows[0],...parentRows[0]}
+        const arr=[merge];
+        res.status(200).json(arr);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -206,7 +207,9 @@ app.get('/teacher/:teacher_id', async (req, res) => {
             contact: contactRows[0] // Assuming one parent per teacher, adjust if needed
         };
 
-        res.status(200).json(teacherData);
+        const merge={...teacherRows[0],...contactRows[0]}
+        const arr=[merge];
+        res.status(200).json(arr);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -356,7 +359,9 @@ app.get('/staff/:staff_id', async (req, res) => {
             contact: contactRows[0] // Assuming one contact per staff member, adjust if needed
         };
 
-        res.status(200).json(staffData);
+        const merge={...staffRows[0],...contactRows[0]}
+        const arr=[merge];
+        res.status(200).json(arr);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
