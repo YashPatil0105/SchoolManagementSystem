@@ -22,7 +22,13 @@ app.get('/student', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query(`SELECT * from school_data.student`);
+        const query = `
+        SELECT s.*, p.parent_name, p.parent_phone
+        FROM school_data.student s
+        LEFT JOIN school_data.parent p ON s.student_id = p.student_id
+    `;
+        // const query=`SELECT * from school_data.student`;
+        const rows = await conn.query(query);
         // console.log(rows);
         const jsonS = JSON.stringify(rows)
         res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -45,12 +51,12 @@ app.get('/student/:student_id', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        
+
         // Query to fetch details of the student with the given student_id
         const studentQuery = "SELECT * FROM school_data.student WHERE student_id = ?";
-        const values=[studentId.slice(1)];
+        const values = [studentId.slice(1)];
         const studentRows = await conn.query(studentQuery, values);
-        
+
         // Check if the student exists
         if (!studentRows) {
             return res.status(404).json({ error: "Student not found" });
@@ -151,7 +157,12 @@ app.get('/teacher', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query(`SELECT * from school_data.teacher`);
+        const query = `
+        SELECT t.*, c.teacher_phone, c.teacher_mail
+        FROM school_data.teacher t
+        LEFT JOIN school_data.teacher_contact c ON t.teacher_id = c.teacher_id
+    `;
+        const rows = await conn.query(query);
         // console.log(rows);
         const jsonS = JSON.stringify(rows)
         res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -174,12 +185,12 @@ app.get('/teacher/:teacher_id', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        
+
         // Query to fetch details of the teacher with the given teacher_id
         const teacherQuery = "SELECT * FROM school_data.teacher WHERE teacher_id = ?";
-        const values=[teacherId.slice(1)];
+        const values = [teacherId.slice(1)];
         const teacherRows = await conn.query(teacherQuery, values);
-        
+
         // Check if the teacher exists
         if (!teacherRows) {
             return res.status(404).json({ error: "teacher not found" });
@@ -256,8 +267,8 @@ app.post('/teacher', async (req, res) => {
 
         await conn.commit();
 
-        teacherId=teacherId.toString();
-        res.status(201).json({ message: "Teacher and contact details inserted successfully",teacherId:teacherId });
+        teacherId = teacherId.toString();
+        res.status(201).json({ message: "Teacher and contact details inserted successfully", teacherId: teacherId });
     } catch (error) {
         console.error(error);
         if (conn) {
@@ -296,7 +307,12 @@ app.get('/staff', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query(`SELECT * from school_data.staff`);
+        const query = `
+        SELECT s.*, c.phone AS contact_phone
+        FROM school_data.staff s
+        LEFT JOIN school_data.staff_contact c ON s.staff_id = c.staff_id
+    `;
+        const rows = await conn.query(query);
         // console.log(rows);
         const jsonS = JSON.stringify(rows)
         res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -319,12 +335,12 @@ app.get('/staff/:staff_id', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        
+
         // Query to fetch details of the staff member with the given staff_id
         const staffQuery = "SELECT * FROM school_data.staff WHERE staff_id = ?";
-        const values=[staffId.slice(1)];
+        const values = [staffId.slice(1)];
         const staffRows = await conn.query(staffQuery, values);
-        
+
         // Check if the staff member exists
         if (!staffRows) {
             return res.status(404).json({ error: "Staff member not found" });
@@ -379,8 +395,8 @@ app.post('/staff', async (req, res) => {
 
         await conn.commit();
 
-        staffId=staffId.toString();
-        res.status(201).json({ message: "Staff and contact details inserted successfully",staffId:staffId });
+        staffId = staffId.toString();
+        res.status(201).json({ message: "Staff and contact details inserted successfully", staffId: staffId });
     } catch (error) {
         console.error(error);
 

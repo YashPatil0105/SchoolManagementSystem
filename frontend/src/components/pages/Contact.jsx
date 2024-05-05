@@ -209,8 +209,8 @@ export const Contact = () => {
                     <td className="px-4 py-2 text-white">{teacher.teacher_id}</td>
                     <td className="px-4 py-2 text-white">{teacher.teacher_name}</td>
                     <td className="px-4 py-2 text-white">{teacher.subject}</td>
-                    <td className="px-4 py-2 text-white">{teacher.teacherPhone}</td>
-                    <td className="px-4 py-2 text-white">{teacher.teacherMail}</td>
+                    <td className="px-4 py-2 text-white">{teacher.teacher_phone}</td>
+                    <td className="px-4 py-2 text-white">{teacher.teacher_mail}</td>
                     <td className="px-4 py-2 text-white">
                       <button
                         onClick={() => handleEdit(teacher)}
