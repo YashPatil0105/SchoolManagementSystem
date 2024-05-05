@@ -206,6 +206,14 @@ export const Services = () => {
     // } catch (error) {
     //   console.error('Error fetching student data:', error);
     // }
+    console.log("Search:", searchQuery);
+    try {
+      const response = await axios.get(`http://localhost:1337/progress/:${searchQuery}`);
+      setProgressData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
   };
 
   const handleViewProgress = async () => {
@@ -339,24 +347,27 @@ export const Services = () => {
                 <FaSearch />
               </button>
               </div>
-            <table className="w-full table-auto bg-gray-800 rounded-lg shadow-lg">
-              <thead>
-                <tr className="bg-gray-700">
-                  <th className="px-4 py-2 text-white">Year Term</th>
-                  <th className="px-4 py-2 text-white">Percentage</th>
-                  <th className="px-4 py-2 text-white">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {progressData.map((progress, index) => (
-                  <tr key={index} className="border-b border-gray-700">
-                    <td className="px-4 py-2 text-white">{progress.year_term}</td>
-                    <td className="px-4 py-2 text-white">{progress.percentage}</td>
-                    <td className="px-4 py-2 text-white">{progress.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              <table className="w-full table-auto bg-gray-800 rounded-lg shadow-lg">
+  <thead>
+    <tr className="bg-gray-700">
+      <th className="px-4 py-2 text-white text-left">Student ID</th>
+      <th className="px-4 py-2 text-white text-left">Year Term</th>
+      <th className="px-4 py-2 text-white text-left">Percentage</th>
+      <th className="px-4 py-2 text-white text-left">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {progressData.map((progress, index) => (
+      <tr key={index} className="border-b border-gray-700">
+        <td className="px-4 py-2 text-white">{progress.student_id}</td>
+        <td className="px-4 py-2 text-white">{progress.year_term}</td>
+        <td className="px-4 py-2 text-white">{progress.percentage}</td>
+        <td className="px-4 py-2 text-white">{progress.status}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
             <div className="flex justify-end mt-4">
               <button
                 onClick={handleAddProgress}
