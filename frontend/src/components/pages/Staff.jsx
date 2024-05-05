@@ -335,7 +335,7 @@ export const Staff = () => {
                     <td className="px-4 py-2 text-white">{staff.staff_id}</td>
                     <td className="px-4 py-2 text-white">{staff.staff_name}</td>
                     <td className="px-4 py-2 text-white">{staff.position}</td>
-                    <td className="px-4 py-2 text-white">{staff.staffPhone}</td>
+                    <td className="px-4 py-2 text-white">{staff.contact_phone}</td>
                     <td className="px-4 py-2 text-white">
                       <button
                         onClick={() => handleEdit(staff)}

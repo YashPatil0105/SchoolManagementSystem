@@ -261,7 +261,7 @@ export const About = () => {
                   <tr key={student.id} className="border-b border-gray-700">
                     <td className="px-4 py-2 text-white">{student.student_id}</td>
                     <td className="px-4 py-2 text-white">{student.name}</td>
-                    <td className="px-4 py-2 text-white">{student.parentName}</td>
+                    <td className="px-4 py-2 text-white">{student.parent_name}</td>
                     <td className="px-4 py-2 text-white">{formatDate(student.DOB)}</td>
                     <td className="px-4 py-2 text-white">{student.phone}</td>
                     <td className="px-4 py-2 text-white">{student.class}</td>
