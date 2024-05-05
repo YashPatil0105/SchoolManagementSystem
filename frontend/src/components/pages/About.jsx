@@ -11,6 +11,7 @@ export const About = () => {
   const [classValue, setClassValue] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [students, setStudents] = useState([]);
+  const [studentId, setStudentId] = useState([]);
   const [mode, setMode] = useState("create"); // Default mode is "create"
   const [searchQuery, setSearchQuery] = useState(""); // State to store search query
 
@@ -120,6 +121,7 @@ export const About = () => {
   const handleEdit = (student) => {
     setIsEditing(true);
     // Set the form fields with the details of the student to be edited
+    setStudentId(student.student_id)
     setName(student.name);
     setParentName(student.parent_name);
     setDob(formatDate(student.DOB));
@@ -128,9 +130,41 @@ export const About = () => {
     // Switch mode to "create" to display the form with populated data
     switchMode("create");
   };
-  const handleEdit2 = () => {
-    setIsEditing(true);
+  const handleUpdate = async (student) => {
+    setIsEditing(true); // Set isEditing to true to switch to editing mode
+  
+    // Perform update logic when user clicks "Update" button
+    const updatedData = {
+      name,
+      DOB: dob,
+      phone,
+      studentClass: classValue, // Adjusted key name to match the backend
+      parent_name: parentName,
+      // parent_phone: phone // Assuming you have a variable for parent's phone number
+    };
+    console.log("Updated data:", updatedData);
+    
+  
+    // Compare the updatedData with the student data to detect changes
+    const hasChanged = Object.keys(updatedData).some(key => updatedData[key] !== student[key]);
+  
+    if (!hasChanged) {
+      window.alert("No changes detected.");
+      return;
+    }
+  
+    try {
+      const response = await axios.put(`http://localhost:1337/student/${studentId}`, updatedData);
+      console.log(response.data);
+      window.alert("Student details updated successfully");
+      setIsEditing(false); // Reset editing mode
+      fetchStudents(); // Fetch updated student data
+    } catch (error) {
+      console.error("Error updating student details:", error);
+      window.alert("Failed to update student details. Please try again.");
+    }
   };
+   
   
   return (
     <div className="bg-gray-900 min-h-screen py-12 px-4">
@@ -237,7 +271,7 @@ export const About = () => {
                 <>
                   <button
                     type="button"
-                    onClick={handleEdit2}
+                    onClick={handleUpdate}
                     className="flex items-center px-6 py-2 rounded-md bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition-colors duration-300"
                   >
                     <FaEdit className="mr-2" />

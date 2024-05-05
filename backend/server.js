@@ -106,7 +106,7 @@ app.put('/student/:student_id', async (req, res) => {
             SET name = ?, DOB = ?, phone = ?, class = ?
             WHERE student_id = ?
         `;
-        await conn.query(updateStudentQuery, [name, DOB, phone, studentClass, studentId.slice(1)]);
+        await conn.query(updateStudentQuery, [name, DOB, phone, studentClass, studentId]);
 
         // Update parent information
         const updateParentQuery = `
@@ -114,7 +114,7 @@ app.put('/student/:student_id', async (req, res) => {
             SET parent_name = ?, parent_phone = ?
             WHERE student_id = ?
         `;
-        await conn.query(updateParentQuery, [parent_name, phone, studentId.slice(1)]);
+        await conn.query(updateParentQuery, [parent_name, phone, studentId]);
 
         await conn.commit();
 
@@ -289,7 +289,7 @@ app.put('/teacher/:teacher_id', async (req, res) => {
             SET teacher_name = ?, subject = ?
             WHERE teacher_id = ?
         `;
-        await conn.query(updateteacherQuery, [teacher_name,subject,teacherId.slice(1)]);
+        await conn.query(updateteacherQuery, [teacher_name,subject,teacherId]);
 
         // Update parent information
         const updateParentQuery = `
@@ -297,7 +297,7 @@ app.put('/teacher/:teacher_id', async (req, res) => {
             SET teacher_phone = ?, teacher_mail = ?
             WHERE teacher_id = ?
         `;
-        await conn.query(updateParentQuery, [teacher_phone,teacher_mail, teacherId.slice(1)]);
+        await conn.query(updateParentQuery, [teacher_phone,teacher_mail, teacherId]);
 
         await conn.commit();
 
@@ -487,7 +487,7 @@ app.put('/staff/:staff_id', async (req, res) => {
             SET staff_name = ?, position = ?
             WHERE staff_id = ?
         `;
-        await conn.query(updateteacherQuery, [staff_name,position,staffId.slice(1)]);
+        await conn.query(updateteacherQuery, [staff_name,position,staffId]);
 
         // Update parent information
         const updateParentQuery = `
@@ -495,7 +495,7 @@ app.put('/staff/:staff_id', async (req, res) => {
             SET phone = ?
             WHERE staff_id = ?
         `;
-        await conn.query(updateParentQuery, [phone, staffId.slice(1)]);
+        await conn.query(updateParentQuery, [phone, staffId]);
 
         await conn.commit();
 
