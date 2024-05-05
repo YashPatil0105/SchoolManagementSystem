@@ -337,6 +337,11 @@ export const Staff = () => {
       console.error('Error fetching staff data:', error);
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="bg-gray-900 min-h-screen py-12 px-4">
@@ -434,6 +439,7 @@ export const Staff = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
               {/* Search button */}

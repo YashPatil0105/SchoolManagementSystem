@@ -207,6 +207,11 @@ export const Services = () => {
     //   console.error('Error fetching student data:', error);
     // }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const handleViewProgress = async () => {
     try {
@@ -329,6 +334,7 @@ export const Services = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
               {/* Search button */}

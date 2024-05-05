@@ -98,6 +98,11 @@ export const About = () => {
       console.error('Error fetching student data:', error);
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -253,6 +258,12 @@ export const About = () => {
         )}
         {mode === "view" && (
           <div>
+             <button
+              onClick={() => Analysis()}
+              className="flex items-center px-6 py-2 mb-4 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
+            >
+              Analyse
+            </button>
             <div className="flex items-center mb-4">
               {/* Search bar */}
               <input
@@ -260,6 +271,7 @@ export const About = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
               {/* Search button */}
