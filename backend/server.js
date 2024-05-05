@@ -84,6 +84,54 @@ app.get('/student/:student_id', async (req, res) => {
     }
 });
 
+app.put('/student/:student_id', async (req, res) => {
+    const studentId = req.params.student_id;
+
+    // Extract student and parent data from request body
+    const { name, DOB, phone, studentClass, parent_name, parent_phone } = req.body;
+
+    // Check if required fields are provided
+    if (!studentId || !name || !DOB || !phone || !studentClass || !parent_name ) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        // Update student information
+        const updateStudentQuery = `
+            UPDATE school_data.student 
+            SET name = ?, DOB = ?, phone = ?, class = ?
+            WHERE student_id = ?
+        `;
+        await conn.query(updateStudentQuery, [name, DOB, phone, studentClass, studentId.slice(1)]);
+
+        // Update parent information
+        const updateParentQuery = `
+            UPDATE school_data.parent 
+            SET parent_name = ?, parent_phone = ?
+            WHERE student_id = ?
+        `;
+        await conn.query(updateParentQuery, [parent_name, phone, studentId.slice(1)]);
+
+        await conn.commit();
+
+        res.status(200).json({ message: "Student and parent information updated successfully" });
+    } catch (error) {
+        console.error(error);
+        if (conn) {
+            await conn.rollback();
+        }
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
+
 app.post('/student', async (req, res) => {
     const { name, DOB, phone, studentClass, parent_name } = req.body;
 
@@ -219,7 +267,53 @@ app.get('/teacher/:teacher_id', async (req, res) => {
         }
     }
 });
+app.put('/teacher/:teacher_id', async (req, res) => {
+    const teacherId = req.params.teacher_id;
 
+    // Extract teacher and parent data from request body
+    const { teacher_name, teacher_phone, subject, teacher_mail } = req.body;
+
+    // Check if required fields are provided
+    if (!teacherId || !teacher_name || !teacher_phone || !subject || !teacher_mail ) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        // Update teacher information
+        const updateteacherQuery = `
+            UPDATE school_data.teacher 
+            SET teacher_name = ?, subject = ?
+            WHERE teacher_id = ?
+        `;
+        await conn.query(updateteacherQuery, [teacher_name,subject,teacherId.slice(1)]);
+
+        // Update parent information
+        const updateParentQuery = `
+            UPDATE school_data.teacher_contact 
+            SET teacher_phone = ?, teacher_mail = ?
+            WHERE teacher_id = ?
+        `;
+        await conn.query(updateParentQuery, [teacher_phone,teacher_mail, teacherId.slice(1)]);
+
+        await conn.commit();
+
+        res.status(200).json({ message: "teacher and parent information updated successfully" });
+    } catch (error) {
+        console.error(error);
+        if (conn) {
+            await conn.rollback();
+        }
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
 app.delete('/teacher/:teacher_id', async (req, res) => {
     const teacherId = req.params.teacher_id;
 
@@ -371,6 +465,53 @@ app.get('/staff/:staff_id', async (req, res) => {
         }
     }
 });
+app.put('/staff/:staff_id', async (req, res) => {
+    const staffId = req.params.staff_id;
+
+    // Extract teacher and parent data from request body
+    const { staff_name, phone, position  } = req.body;
+
+    // Check if required fields are provided
+    if (!staffId || !staff_name || !phone || !position ) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        // Update teacher information
+        const updateteacherQuery = `
+            UPDATE school_data.staff 
+            SET staff_name = ?, position = ?
+            WHERE staff_id = ?
+        `;
+        await conn.query(updateteacherQuery, [staff_name,position,staffId.slice(1)]);
+
+        // Update parent information
+        const updateParentQuery = `
+            UPDATE school_data.staff_contact 
+            SET phone = ?
+            WHERE staff_id = ?
+        `;
+        await conn.query(updateParentQuery, [phone, staffId.slice(1)]);
+
+        await conn.commit();
+
+        res.status(200).json({ message: "teacher and parent information updated successfully" });
+    } catch (error) {
+        console.error(error);
+        if (conn) {
+            await conn.rollback();
+        }
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
 app.post('/staff', async (req, res) => {
     const { staff_name, position, phone } = req.body;
 
@@ -500,6 +641,36 @@ app.get('/progress', async (req, res) => {
         }
     }
 })
+app.get('/progress/:student_id', async (req, res) => {
+    const studentId = req.params.student_id;
+
+    if (!studentId) {
+        return res.status(400).json({ error: "Student ID is required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+
+        // Query to fetch progress data by student_id
+        const query = "SELECT * FROM school_data.progress WHERE student_id = ?";
+        const values=studentId.slice(1);
+        const rows = await conn.query(query, values);
+
+        // If no rows are returned, return an empty array
+        // const progressData = rows.length ? rows : [];
+
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
+
 app.post('/progress', async (req, res) => {
     const { year_term, percentage, status, student_id } = req.body;
 
