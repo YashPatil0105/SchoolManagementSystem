@@ -12,7 +12,7 @@ const mariadb = require('mariadb');
 const pool = mariadb.createPool({
     host: '127.0.0.1',
     user: 'root',
-    password: 'vjti@123',
+    password: 'sumit1234',
     connectionLimit: 5
 });
 
@@ -29,6 +29,10 @@ app.get('/student', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.get('/student/:student_id', async (req, res) => {
@@ -154,6 +158,10 @@ app.get('/teacher', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.get('/teacher/:teacher_id', async (req, res) => {
@@ -274,6 +282,10 @@ app.get('/teacher_contact', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 
@@ -291,6 +303,10 @@ app.get('/staff', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.get('/staff/:staff_id', async (req, res) => {
@@ -391,6 +407,10 @@ app.get('/staff_contact', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.delete('/staff/:staff_id', async (req, res) => {
@@ -432,6 +452,10 @@ app.get('/parent', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 
@@ -449,6 +473,10 @@ app.get('/progress', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.post('/progress', async (req, res) => {
@@ -490,6 +518,10 @@ app.get('/daily_attendence', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.post('/daily_attendence', async (req, res) => {
@@ -531,6 +563,10 @@ app.get('/attendence_record', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 
@@ -548,6 +584,10 @@ app.get('/grading', async (req, res) => {
         res.end(jsonS);
     } catch (error) {
         console.log(error);
+    } finally {
+        if (conn) {
+            conn.release(); // release connection back to the pool
+        }
     }
 })
 app.post('/grading', async (req, res) => {
