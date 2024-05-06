@@ -189,8 +189,14 @@ export const Services = () => {
   
         // Optionally, you can display a success message or perform other actions after successful submission
       } catch (error) {
-        console.error('Error submitting progress:', error);
-        // Handle error (e.g., display error message to the user)
+        console.error('Error submitting attendance:', error);
+        if (error.response && error.response.data && error.response.data.error) {
+          // If server returns an error message
+          window.alert(error.response.data.error);
+        } else {
+          // If an unexpected error occurs
+          window.alert('An unexpected error occurred. Please try again later.');
+        }
       }
     } else {
       setErrors(errors);

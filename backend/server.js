@@ -12,7 +12,7 @@ const mariadb = require('mariadb');
 const pool = mariadb.createPool({
     host: '127.0.0.1',
     user: 'root',
-    password: 'sumit1234',
+    password: 'vjti@123',
     connectionLimit: 5
 });
 
@@ -688,7 +688,12 @@ app.post('/progress', async (req, res) => {
         res.status(201).json({ message: "Progress record inserted successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        if (error.errno === 1644 && error.sqlState === '45000') {
+            res.status(400).json({ error: "Student does not exist" });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: "Internal server error" });
+        }
     } finally {
         if (conn) {
             conn.release(); // release connection back to the pool
@@ -733,7 +738,12 @@ app.post('/daily_attendence', async (req, res) => {
         res.status(201).json({ message: "Attendance record inserted successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        if (error.errno === 1644 && error.sqlState === '45000') {
+            res.status(400).json({ error: "Student does not exist" });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: "Internal server error" });
+        }
     } finally {
         if (conn) {
             conn.release(); // release connection back to the pool
