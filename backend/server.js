@@ -71,8 +71,8 @@ app.get('/student/:student_id', async (req, res) => {
             student: studentRows[0],
             parent: parentRows[0] // Assuming one parent per student, adjust if needed
         };
-        const merge={...studentRows[0],...parentRows[0]}
-        const arr=[merge];
+        const merge = { ...studentRows[0], ...parentRows[0] }
+        const arr = [merge];
         res.status(200).json(arr);
     } catch (error) {
         console.error(error);
@@ -91,7 +91,7 @@ app.put('/student/:student_id', async (req, res) => {
     const { name, DOB, phone, studentClass, parent_name, parent_phone } = req.body;
 
     // Check if required fields are provided
-    if (!studentId || !name || !DOB || !phone || !studentClass || !parent_name ) {
+    if (!studentId || !name || !DOB || !phone || !studentClass || !parent_name) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -255,8 +255,8 @@ app.get('/teacher/:teacher_id', async (req, res) => {
             contact: contactRows[0] // Assuming one parent per teacher, adjust if needed
         };
 
-        const merge={...teacherRows[0],...contactRows[0]}
-        const arr=[merge];
+        const merge = { ...teacherRows[0], ...contactRows[0] }
+        const arr = [merge];
         res.status(200).json(arr);
     } catch (error) {
         console.error(error);
@@ -274,7 +274,7 @@ app.put('/teacher/:teacher_id', async (req, res) => {
     const { teacher_name, teacher_phone, subject, teacher_mail } = req.body;
 
     // Check if required fields are provided
-    if (!teacherId || !teacher_name || !teacher_phone || !subject || !teacher_mail ) {
+    if (!teacherId || !teacher_name || !teacher_phone || !subject || !teacher_mail) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -289,7 +289,7 @@ app.put('/teacher/:teacher_id', async (req, res) => {
             SET teacher_name = ?, subject = ?
             WHERE teacher_id = ?
         `;
-        await conn.query(updateteacherQuery, [teacher_name,subject,teacherId]);
+        await conn.query(updateteacherQuery, [teacher_name, subject, teacherId]);
 
         // Update parent information
         const updateParentQuery = `
@@ -297,7 +297,7 @@ app.put('/teacher/:teacher_id', async (req, res) => {
             SET teacher_phone = ?, teacher_mail = ?
             WHERE teacher_id = ?
         `;
-        await conn.query(updateParentQuery, [teacher_phone,teacher_mail, teacherId]);
+        await conn.query(updateParentQuery, [teacher_phone, teacher_mail, teacherId]);
 
         await conn.commit();
 
@@ -453,8 +453,8 @@ app.get('/staff/:staff_id', async (req, res) => {
             contact: contactRows[0] // Assuming one contact per staff member, adjust if needed
         };
 
-        const merge={...staffRows[0],...contactRows[0]}
-        const arr=[merge];
+        const merge = { ...staffRows[0], ...contactRows[0] }
+        const arr = [merge];
         res.status(200).json(arr);
     } catch (error) {
         console.error(error);
@@ -469,10 +469,10 @@ app.put('/staff/:staff_id', async (req, res) => {
     const staffId = req.params.staff_id;
 
     // Extract teacher and parent data from request body
-    const { staff_name, phone, position  } = req.body;
+    const { staff_name, phone, position } = req.body;
 
     // Check if required fields are provided
-    if (!staffId || !staff_name || !phone || !position ) {
+    if (!staffId || !staff_name || !phone || !position) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -487,7 +487,7 @@ app.put('/staff/:staff_id', async (req, res) => {
             SET staff_name = ?, position = ?
             WHERE staff_id = ?
         `;
-        await conn.query(updateteacherQuery, [staff_name,position,staffId]);
+        await conn.query(updateteacherQuery, [staff_name, position, staffId]);
 
         // Update parent information
         const updateParentQuery = `
@@ -654,7 +654,7 @@ app.get('/progress/:student_id', async (req, res) => {
 
         // Query to fetch progress data by student_id
         const query = "SELECT * FROM school_data.progress WHERE student_id = ?";
-        const values=studentId.slice(1);
+        const values = studentId.slice(1);
         const rows = await conn.query(query, values);
 
         // If no rows are returned, return an empty array
@@ -753,13 +753,46 @@ app.get('/daily_attendence/:student_id', async (req, res) => {
 
         // Query to fetch attendance records by student_id
         const query = "SELECT * FROM school_data.daily_attendence WHERE student_id = ?";
-        values=studentId.slice(1);
+        values = studentId.slice(1);
         const rows = await conn.query(query, values);
 
         // If no rows are returned, return an empty array
         // const attendanceRecords = rows.length ? rows : [];
 
         res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        if (conn) {
+            conn.release(); // Release connection back to the pool
+        }
+    }
+});
+app.put('/daily_attendence/:attendence_id', async (req, res) => {
+    const attendenceId = req.params.attendence_id;
+
+    // Extract attendance record data from request body
+    const { date, status, student_id } = req.body;
+
+    // Check if required fields are provided
+    if (!attendenceId || !date || !status || !student_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+
+        // Update attendance record information
+        const updateQuery = `
+            UPDATE school_data.daily_attendence 
+            SET date = ?, status = ?, student_id = ?
+            WHERE attendence_id = ?
+        `;
+        await conn.query(updateQuery, [date, status, student_id, attendenceId]);
+
+        res.status(200).json({ message: "Attendance record information updated successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
