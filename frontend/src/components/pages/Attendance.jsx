@@ -292,6 +292,11 @@ export const Attendance = () => {
       console.error('Error fetching student data:', error);
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
   const toggleView = () => {
     setShowTable(!showTable);
   };
@@ -396,6 +401,7 @@ export const Attendance = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
               {/* Search button */}
