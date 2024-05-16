@@ -6,3 +6,4 @@ export * from "./Staff";
 export * from "./Attendance";
 export * from "./Record"
 export * from "./Toggle"
+export * from "./PDFReport"

@@ -2,6 +2,85 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import axios from 'axios';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import Modal from 'react-modal';
+import { Document, Page, Text, View, StyleSheet,PDFViewer,PDFDownloadLink } from '@react-pdf/renderer';
+
+const styles = StyleSheet.create({
+  page: {
+    backgroundColor: '#ffffff',
+    padding: 40,
+  },
+  section: {
+    marginBottom: 10,
+  },
+  titleContainer: {
+    alignItems: 'center', // Center items horizontally
+    justifyContent: 'center', // Center items vertically
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    // Tailwind-like utility classes
+    // You can define these styles based on Tailwind classes
+    color: '#800000',
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    // Tailwind-like utility classes
+    // You can define these styles based on Tailwind classes
+    color: '#6B7280',
+  },
+  text: {
+    fontSize: 12,
+    marginBottom: 5,
+    // Tailwind-like utility classes
+    // You can define these styles based on Tailwind classes
+    color: '#4B5563',
+  },
+});
+
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+};
+
+const PDFReport = ({ record }) => {
+  return (
+    <Document>
+      <Page style={styles.page}>
+        <View style={styles.section}>
+        <View style={styles.titleContainer}>
+            <Text style={styles.title}>Teacher Report</Text>
+          </View>
+        </View>
+        {record && record.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.subtitle}>record:</Text>
+            {record.map(record => (
+              <View key={record.teacher_id} style={styles.text}>
+                <Text>StudentID: {record.student_id}</Text>
+                <Text>Date: {record.date}</Text>
+                <Text>Status: {record.status}</Text>
+               
+                
+              </View>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.section}>
+            <Text>No students found.</Text>
+          </View>
+        )}
+      </Page>
+    </Document>
+  );
+};
 
 export const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
@@ -13,6 +92,8 @@ export const Attendance = () => {
   const [showTable, setShowTable] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // State to store search query
   const [selectType,setSelectType]=useState("date");
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+
   
   const handleSelectChange=(e)=>{
     setSelectType(e.target.value==='date'?'date':'id')
@@ -138,6 +219,40 @@ export const Attendance = () => {
     }
     return `${year}-${month}-${day}`;
   }
+  const generatePDF = () => {
+    const input = document.getElementById('reportContent');
+
+    if (input) {
+      html2canvas(input)
+        .then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          pdf.addImage(imgData, 'PNG', 0, 0);
+          pdf.save('report.pdf');
+        })
+        .catch((error) => {
+          console.error('Error generating PDF:', error);
+          // window.alert('Failed to generate PDF. Please try again.');
+        });
+    } else {
+      console.error('Element with ID "reportContent" not found in the DOM.');
+      window.alert('Failed to generate PDF. Please try again.');
+    }
+  };
+    // Open
+    const Analysis = async () => {
+      // Fetch the latest student data before generating the PDF
+      await fetchAttendanceData();
+  
+      // Open the modal when Analyse button is clicked
+      setShowModal(true);
+      generatePDF();
+    };
+    
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <div className="bg-gray-900 min-h-screen  py-12 px-4">
       <div className="max-w-3xl mx-auto">
@@ -219,6 +334,57 @@ export const Attendance = () => {
         {showTable && (
 
           <div className="mt-8">
+                                      <button
+                onClick={Analysis}
+                className="flex items-center px-6 py-2 mb-4 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300"
+              >
+                Analyse
+              </button>
+
+              {/* Modal */}
+              <div id="reportContent">
+                <Modal
+                  isOpen={showModal}
+                  onRequestClose={closeModal}
+                  contentLabel="PDF Report"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    {attendance && ( // Add null check here
+                      <PDFViewer style={{ width: "100%", height: "75vh" }}>
+                        <PDFReport record={attendance} />
+                      </PDFViewer>
+                    )}
+                    <div style={{ marginTop: "1rem" }}>
+                      <PDFDownloadLink
+                        document={<PDFReport record={attendance} />}
+                        fileName="report.pdf"
+                      >
+                        {({ blob, url, loading, error }) =>
+                            <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        type="button"
+                      >
+                        {loading ? "Loading..." : "Download PDF"}
+                      </button>
+                        }
+                      </PDFDownloadLink>
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
+                        onClick={closeModal}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </Modal>
+              </div>
+
             <h1 className="text-2xl font-bold text-white mb-4 text-center">Attendance Records</h1>
             <div className="flex items-center mb-4">
               {/* Search bar */}
